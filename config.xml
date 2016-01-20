@@ -36,7 +36,7 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>java 7</jdk>
+  <jdk>java 8</jdk>
   <triggers>
     <hudson.triggers.TimerTrigger>
       <spec>H 2 * * *</spec>
@@ -47,7 +47,7 @@
     <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
     <artifactId>root</artifactId>
   </rootModule>
-  <goals>clean verify -Pall,luna</goals>
+  <goals>clean verify -Pall,mars</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
