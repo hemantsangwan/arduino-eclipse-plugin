@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="it.baeyens.arduino.monitor" name="A serial monitor" schema="schema/it.baeyens.arduino.monitor.exsd"/>
 <extension point="org.eclipse.ui.views">
 	<category
             name="Arduino"
@@ -122,6 +121,24 @@ The color used by the third serial connection of the serial monitor
 <description>
 The color used by the forth serial connection of the serial monitor
 </description>
+</colorDefinition>
+<colorDefinition
+      categoryId="it.baeyens.arduino.serialMonitor.themeCategory"
+      id="it.baeyens.serial.color.6"
+      label="serial Channel 6 Color"
+      value="COLOR_DARK_YELLOW">
+   <description>
+      The color used by the sixth serial connection of the serial monitor
+   </description>
+</colorDefinition>
+<colorDefinition
+      categoryId="it.baeyens.arduino.serialMonitor.themeCategory"
+      id="it.baeyens.serial.color.5"
+      label="serial Channel 5 Color"
+      value="COLOR_DARK_RED">
+   <description>
+      The color used by the fifth serial connection of the serial monitor
+   </description>
 </colorDefinition>
 </extension>
 </plugin>
