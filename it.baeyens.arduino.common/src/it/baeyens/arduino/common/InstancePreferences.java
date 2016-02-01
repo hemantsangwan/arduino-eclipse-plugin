@@ -1,5 +1,6 @@
 package it.baeyens.arduino.common;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +22,28 @@ import org.osgi.service.prefs.BackingStoreException;
  * @author jan Baeyens
  * 
  */
-public class ArduinoInstancePreferences extends ArduinoConst {
+public class InstancePreferences extends Const {
+
+    public static boolean getOpenSerialWithMonitor() {
+	return getGlobalBoolean(KEY_OPEN_SERIAL_WITH_MONITOR, true);
+    }
+
+    public static void setOpenSerialWithMonitor(boolean value) {
+	setGlobalValue(KEY_OPEN_SERIAL_WITH_MONITOR, value);
+    }
+
+    /**
+     * Give back the user option if the libraries need to be added or not
+     * 
+     * @return true if libraries need to be added else false.
+     */
+    public static boolean getAutomaticallyIncludeLibraries() {
+	return getGlobalBoolean(KEY_AUTO_IMPORT_LIBRARIES, true);
+    }
+
+    public static void setAutomaticallyIncludeLibraries(boolean value) {
+	setGlobalValue(KEY_AUTO_IMPORT_LIBRARIES, value);
+    }
 
     /***
      * get the stored option whether a build before the upload is wanted or not. If nothing is stored the option is ask and this method will pop up a
@@ -50,8 +72,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	    public void run() {
 		Shell theShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 		MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-		dialog.setText(Messages.ArduinoInstancePreferences_Build_before_upload);
-		dialog.setMessage(Messages.ArduinoInstancePreferences_do_you_want_to_build_before_upload);
+		dialog.setText(Messages.Build_before_upload);
+		dialog.setMessage(Messages.do_you_want_to_build_before_upload);
 		switch (dialog.open()) {
 		case SWT.NO:
 		    this.ret = false;
@@ -257,8 +279,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	if (showError) {
 	    // If not then we bail out with an error.
 	    // And no pages are presented (with no option to FINISH).
-	    Common.log(
-		    new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoInstancePreferences_Plerase_wait_for_installer_job, null));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Please_wait_for_installer_job, null));
 	}
 	return false;
     }
@@ -305,7 +326,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static String[] getPrivateLibraryPaths() {
-	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Common.getDefaultPrivateLibraryPath()).split(";"); //$NON-NLS-1$
+	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Common.getDefaultPrivateLibraryPath()).split(File.pathSeparator);
     }
 
     public static void setPrivateLibraryPaths(String[] folderName) {
@@ -313,11 +334,11 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static String[] getPrivateHardwarePaths() {
-	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Common.getDefaultPrivateHardwarePath()).split(";"); //$NON-NLS-1$
+	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Common.getDefaultPrivateHardwarePath()).split(File.pathSeparator);
     }
 
     public static void setPrivateHardwarePaths(String[] folderName) {
-	setGlobalValue(KEY_PRIVATE_HARDWARE_PATHS, String.join(";", folderName)); //$NON-NLS-1$
+	setGlobalValue(KEY_PRIVATE_HARDWARE_PATHS, String.join(File.pathSeparator, folderName));
     }
 
     /**
@@ -326,8 +347,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @return a list of all the folder locations that can contain hardware
      */
     public static String[] getHardwarePaths() {
-	return (getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, "") + ";" + ConfigurationPreferences.getInstallationPath()) //$NON-NLS-1$ //$NON-NLS-2$
-		.split(";"); //$NON-NLS-1$
+	return (getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, EMPTY_STRING) + File.pathSeparator + ConfigurationPreferences.getInstallationPath())
+		.split(File.pathSeparator);
     }
 
 }

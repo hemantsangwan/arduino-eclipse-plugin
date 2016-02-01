@@ -82,8 +82,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 
 /**
  * This is a specialized makefile generator that takes advantage of the extensions present in Gnu Make.
@@ -129,7 +129,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse .core.resources.IResourceDelta)
 	 */
 
-	@SuppressWarnings("incomplete-switch")
 	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
 	    // Should the visitor keep iterating in current directory
@@ -177,6 +176,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			if (!this.generator.isGeneratedResource(resource)) {
 			    this.generator.appendDeletedSubdirectory((IContainer) resource);
 			}
+			break;
+		    default:// nothing to do
 			break;
 		    }
 		}
@@ -250,7 +251,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		    if (rcInfo instanceof IFolderInfo) {
 			String ext = resource.getFileExtension();
 			if (((IFolderInfo) rcInfo).buildsFileType(ext) &&
-				// If this file resource is a generated resource, then
+				// If this file resource is a generated
+				// resource, then
 				// it is uninteresting
 			!this.generator.isGeneratedResource(resource)) {
 			    willBuild = true;
@@ -283,11 +285,15 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
     // String constants for makefile contents and messages
     private static final String COMMENT = "MakefileGenerator.comment"; //$NON-NLS-1$
-    // private static final String AUTO_DEP = COMMENT + ".autodeps"; //$NON-NLS-1$
-    // private static final String MESSAGE = "ManagedMakeBuilder.message"; //$NON-NLS-1$
-    // private static final String BUILD_ERROR = MESSAGE + ".error"; //$NON-NLS-1$
+    // private static final String AUTO_DEP = COMMENT + ".autodeps";
+    // //$NON-NLS-1$
+    // private static final String MESSAGE = "ManagedMakeBuilder.message";
+    // //$NON-NLS-1$
+    // private static final String BUILD_ERROR = MESSAGE + ".error";
+    // //$NON-NLS-1$
 
-    // private static final String DEP_INCL = COMMENT + ".module.dep.includes"; //$NON-NLS-1$
+    // private static final String DEP_INCL = COMMENT + ".module.dep.includes";
+    // //$NON-NLS-1$
     private static final String HEADER = COMMENT + ".header"; //$NON-NLS-1$
 
     protected static final String MESSAGE_FINISH_BUILD = ManagedMakeMessages.getResourceString("MakefileGenerator.message.finish.build"); //$NON-NLS-1$
@@ -296,7 +302,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     protected static final String MESSAGE_START_FILE = ManagedMakeMessages.getResourceString("MakefileGenerator.message.start.file"); //$NON-NLS-1$
     protected static final String MESSAGE_START_DEPENDENCY = ManagedMakeMessages.getResourceString("MakefileGenerator.message.start.dependency"); //$NON-NLS-1$
     protected static final String MESSAGE_NO_TARGET_TOOL = ManagedMakeMessages.getResourceString("MakefileGenerator.message.no.target"); //$NON-NLS-1$
-    // private static final String MOD_INCL = COMMENT + ".module.make.includes"; //$NON-NLS-1$
+    // private static final String MOD_INCL = COMMENT + ".module.make.includes";
+    // //$NON-NLS-1$
     private static final String MOD_LIST = COMMENT + ".module.list"; //$NON-NLS-1$
     private static final String MOD_VARS = COMMENT + ".module.variables"; //$NON-NLS-1$
     private static final String MOD_RULES = COMMENT + ".build.rule"; //$NON-NLS-1$
@@ -500,7 +507,11 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     /**
      * This method collects the dependency postprocessors and file extensions defined for the tool chain
      */
-    private boolean collectDependencyGeneratorInformation(ToolInfoHolder h, Vector<String> depExts, // Vector of dependency file extensions
+    private boolean collectDependencyGeneratorInformation(ToolInfoHolder h, Vector<String> depExts, // Vector
+												    // of
+												    // dependency
+												    // file
+												    // extensions
 	    IManagedDependencyGenerator2[] postProcessors) {
 
 	boolean callPopulateDummyTargets = false;
@@ -656,7 +667,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	checkCancel();
 
 	// Get all the subdirectories participating in the build
-	updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.finding.sources", this.project.getName())); //$NON-NLS-1$
+	updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.finding.sources", //$NON-NLS-1$
+		this.project.getName()));
 	ResourceProxyVisitor resourceVisitor = new ResourceProxyVisitor(this, this.config);
 	this.project.accept(resourceVisitor, IResource.NONE);
 	checkCancel();
@@ -668,7 +680,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	// Make sure there is something to build
 	if (getSubdirList().isEmpty()) {
-	    String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source", this.project.getName()); //$NON-NLS-1$
+	    String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source", //$NON-NLS-1$
+		    this.project.getName());
 	    updateMonitor(info);
 	    status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.INFO, new String(), null);
 	    status.add(new Status(IStatus.INFO, ManagedBuilderCorePlugin.getUniqueIdentifier(), NO_SOURCE_FOLDERS, info, null));
@@ -926,7 +939,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// Populate the makefile if any buildable source files have been found
 	// in the project
 	if (getSubdirList().isEmpty()) {
-	    String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source", this.project.getName()); //$NON-NLS-1$
+	    String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source", //$NON-NLS-1$
+		    this.project.getName());
 	    updateMonitor(info);
 	    status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.INFO, new String(), null);
 	    status.add(new Status(IStatus.INFO, ManagedBuilderCorePlugin.getUniqueIdentifier(), NO_SOURCE_FOLDERS, info, null));
@@ -1009,7 +1023,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	}
 
 	IPath moduleOutputPath = buildRoot.append(moduleRelativePath);
-	updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.gen.source.makefile", moduleOutputPath.toString())); //$NON-NLS-1$
+	updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.gen.source.makefile", //$NON-NLS-1$
+		moduleOutputPath.toString()));
 
 	// Now create the directory
 	IPath moduleOutputDir = createDirectory(moduleOutputPath.toString());
@@ -1234,7 +1249,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	buffer.append("RM := "); //$NON-NLS-1$
 
 	// support macros in the clean command
-	String cleanCommand = "rm -f"; // config.getCleanCommand(); Modded by //$NON-NLS-1$
+	String cleanCommand = "rm -f"; // config.getCleanCommand(); //$NON-NLS-1$
+				       // Modded by
 				       // JABA
 
 	// try {
@@ -1254,8 +1270,10 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	buffer.append(COMMENT_SYMBOL + WHITESPACE + ManagedMakeMessages.getResourceString(SRC_LISTS) + NEWLINE);
 	buffer.append("-include sources.mk" + NEWLINE); //$NON-NLS-1$
 
-	// Change the include of the "root" (our sketch) folder to be before libraries and other files
-	// When it is after it is different to the Arduino IDE and can cause linking/combining issues
+	// Change the include of the "root" (our sketch) folder to be before
+	// libraries and other files
+	// When it is after it is different to the Arduino IDE and can cause
+	// linking/combining issues
 	buffer.append("-include subdir.mk" + NEWLINE); //$NON-NLS-1$
 
 	// Add includes for each subdir in child-subdir-first order (required
@@ -1271,7 +1289,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    buffer.append("-include " + escapeWhitespaces(dir) + SEPARATOR + "subdir.mk" + NEWLINE); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	// Change the include of the "root" (our sketch) folder to be before libraries and other files
+	// Change the include of the "root" (our sketch) folder to be before
+	// libraries and other files
 	// buffer.append("-include subdir.mk" + NEWLINE); //$NON-NLS-1$
 
 	buffer.append("-include objects.mk" + NEWLINE + NEWLINE); //$NON-NLS-1$
@@ -1472,7 +1491,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		dependency = escapeWhitespaces(dependency);
 		managedProjectOutputs.add(dependency);
 		// }
-		buffer.append(TAB + "-cd" + WHITESPACE + escapeWhitespaces(buildDir) + WHITESPACE + LOGICAL_AND + WHITESPACE + "$(MAKE) " + depTargets //$NON-NLS-1$ //$NON-NLS-2$
+		buffer.append(TAB + "-cd" + WHITESPACE + escapeWhitespaces(buildDir) + WHITESPACE + LOGICAL_AND //$NON-NLS-1$
+			+ WHITESPACE + "$(MAKE) " + depTargets //$NON-NLS-1$
 			+ NEWLINE);
 	    }
 	    // }
@@ -1957,8 +1977,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	// Get all the module names
 	for (IResource container : getSubdirList()) {
-	    updateMonitor(
-		    ManagedMakeMessages.getFormattedString("MakefileGenerator.message.adding.source.folder", container.getFullPath().toString())); //$NON-NLS-1$
+	    updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.adding.source.folder", //$NON-NLS-1$
+		    container.getFullPath().toString()));
 	    // Check the special case where the module is the project root
 	    if (container.getFullPath() == this.project.getFullPath()) {
 		buffer.append(DOT + WHITESPACE + LINEBREAK);
@@ -2141,7 +2161,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 								  // relative
 								  // or
 								  // absolute
-		this.usedOutType = null; // MODED moved JABA JAn Baeyens get the out
+		this.usedOutType = null; // MODED moved JABA JAn Baeyens get the
+					 // out
 		// type from the add source call
 		addRuleForSource(relativePath, ruleBuffer, resource, sourceLocation, rcInfo, generatedSource, generatedDepFiles, generatedOutputs);
 
@@ -2344,7 +2365,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      * 
      * This is an example of a pattern rule:
      * 
-     * <relative_path>/%.<outputExtension>: ../<relative_path>/%.<inputExtension>
+     * <relative_path>/%.<outputExtension>: ../<relative_path>/%. <inputExtension>
      * 
      * @echo Building file: $<
      * @echo Invoking tool xxx
@@ -2379,6 +2400,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      * @param enumeratedOutputs
      *            vector of the filenames that are the output of this rule
      */
+    @SuppressWarnings("null")
     protected void addRuleForSource(String relativePath, StringBuffer buffer, IResource resource, IPath sourceLocation, IResourceInfo rcInfo,
 	    boolean generatedSource, Vector<IPath> generatedDepFiles, Vector<IPath> enumeratedOutputs) {
 
@@ -3157,7 +3179,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		// else {
 		// // bad
 		// throw new AssertionError(
-		// "tool parent must be one of configuration, toolchain, or resource configuration");
+		// "tool parent must be one of configuration, toolchain, or
+		// resource configuration");
 		// }
 
 		// if (config != null) {
@@ -3269,12 +3292,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		    } catch (Exception e) {
 			// The provided class is not a
 			// IManagedOutputNameProviderJaba class;
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-				"The provided class is not of type IManagedOutputNameProviderJaba", e)); //$NON-NLS-1$
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "The provided class is not of type IManagedOutputNameProviderJaba", //$NON-NLS-1$
+				e));
 		    }
 		    if (outPaths != null) { // MODDED BY JABA ADDED to handle
 					    // null as return value
-			this.usedOutType = type; // MODDED By JABA added to retun the
+			this.usedOutType = type; // MODDED By JABA added to
+						 // retun the
 			// output type used to generate the
 			// command line
 			for (int j = 0; j < outPaths.length; j++) {
@@ -3600,18 +3624,20 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	// Get the contents of the dependency file
 	InputStream contentStream = makefile.getContents(false);
-	Reader in = new InputStreamReader(contentStream);
 	StringBuffer inBuffer = null;
-	int chunkSize = contentStream.available();
-	inBuffer = new StringBuffer(chunkSize);
-	char[] readBuffer = new char[chunkSize];
-	int n = in.read(readBuffer);
-	while (n > 0) {
-	    inBuffer.append(readBuffer);
-	    n = in.read(readBuffer);
+	try (Reader in = new InputStreamReader(contentStream);) {
+
+	    int chunkSize = contentStream.available();
+	    inBuffer = new StringBuffer(chunkSize);
+	    char[] readBuffer = new char[chunkSize];
+	    int n = in.read(readBuffer);
+	    while (n > 0) {
+		inBuffer.append(readBuffer);
+		n = in.read(readBuffer);
+	    }
+	    contentStream.close();
+	    in.close();
 	}
-	contentStream.close();
-	in.close();
 
 	// The rest of this operation is equally expensive, so
 	// if we are doing an incremental build, only update the
@@ -4595,7 +4621,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    try {
 		folder.delete(true, new SubProgressMonitor(this.monitor, 1));
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "Folder deletion failed " + folder.toString(), e)); //$NON-NLS-1$
+		Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "Folder deletion failed " + folder.toString(), //$NON-NLS-1$
+			e));
 	    }
 	}
     }
@@ -4650,12 +4677,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     }
 
     @Override
-    public void initialize(int buildKind, IConfiguration cfg, IBuilder _builder, IProgressMonitor monitor) {
-	IBuilder builder = _builder;
+    public void initialize(int buildKind, IConfiguration cfg, IBuilder _builder, IProgressMonitor monitor1) {
+	IBuilder builder1 = _builder;
 	// Save the project so we can get path and member information
 	this.project = cfg.getOwner().getProject();
-	if (builder == null) {
-	    builder = cfg.getEditableBuilder();
+	if (builder1 == null) {
+	    builder1 = cfg.getEditableBuilder();
 	}
 	try {
 	    this.projectResources = this.project.members();
@@ -4663,7 +4690,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    this.projectResources = null;
 	}
 	// Save the monitor reference for reporting back to the user
-	this.monitor = monitor;
+	this.monitor = monitor1;
 	// Get the build info for the project
 	// this.info = info;
 	// Get the name of the build target
@@ -4675,7 +4702,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    // try to resolve the build macros in the target extension
 	    this.buildTargetExt = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(this.buildTargetExt, "", //$NON-NLS-1$
 		    " ", //$NON-NLS-1$
-		    IBuildMacroProvider.CONTEXT_CONFIGURATION, builder);
+		    IBuildMacroProvider.CONTEXT_CONFIGURATION, builder1);
 	} catch (BuildMacroException e) {// JABA is not going to write this code
 	}
 
@@ -4683,7 +4710,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    // try to resolve the build macros in the target name
 	    String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(this.buildTargetName, "", //$NON-NLS-1$
 		    " ", //$NON-NLS-1$
-		    IBuildMacroProvider.CONTEXT_CONFIGURATION, builder);
+		    IBuildMacroProvider.CONTEXT_CONFIGURATION, builder1);
 	    if (resolved != null) {
 		resolved = resolved.trim();
 		if (resolved.length() > 0)
@@ -4697,7 +4724,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	}
 	// Cache the build tools
 	this.config = cfg;
-	this.builder = builder;
+	this.builder = builder1;
 
 	initToolInfos();
 	// set the top build dir path

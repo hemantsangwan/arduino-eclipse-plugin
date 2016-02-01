@@ -16,13 +16,13 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.PlatformUI;
 
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
-import it.baeyens.arduino.tools.PdePreprocessor;
 
 /**
- * This id a handler to connect the plugin.xml to the code for building the code This method forces a save all before building
+ * This id a handler to connect the plugin.xml to the code for building the code
+ * This method forces a save all before building
  * 
  * @author jan
  * 
@@ -45,7 +45,7 @@ class BuildJobHandler extends Job {
 	    this.myBuildProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
 
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.BuildHandler_Failed_to_build, e));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BuildHandler_Failed_to_build, e));
 	}
 	return Status.OK_STATUS;
     }
@@ -63,16 +63,11 @@ public class BuildHandler extends AbstractHandler {
 	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.BuildHandler_No_Project_found));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BuildHandler_No_Project_found));
 	    break;
 	default:
 	    PlatformUI.getWorkbench().saveAllEditors(false);
 	    for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
-		try {
-		    PdePreprocessor.processProject(SelectedProjects[curProject]);
-		} catch (CoreException e) {
-		    e.printStackTrace();
-		}
 		this.mBuildJob = new BuildJobHandler(SelectedProjects[curProject]);
 		this.mBuildJob.setPriority(Job.INTERACTIVE);
 		this.mBuildJob.schedule();
@@ -82,10 +77,11 @@ public class BuildHandler extends AbstractHandler {
 		protected IStatus run(IProgressMonitor monitor) {
 		    try {
 			String buildflag = "FuStatub"; //$NON-NLS-1$
-			char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/', 'e', 'c', 'l', 'i',
-				'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'b', 'u', 'i', 'l', 'd', 'S', 't', 'a', 'r', 't',
-				'.', 'h', 't', 'm', 'l', '?', 'b', '=' };
-			IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+			char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i',
+				't', '/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a',
+				'd', '/', 'b', 'u', 'i', 'l', 'd', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l',
+				'?', 'b', '=' };
+			IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 			int curFsiStatus = myScope.getInt(buildflag, 0) + 1;
 			myScope.putInt(buildflag, curFsiStatus);
 			URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));

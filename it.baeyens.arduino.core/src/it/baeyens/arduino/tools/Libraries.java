@@ -24,20 +24,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 
-public class ArduinoLibraries {
+public class Libraries {
     /**
      * for a given folder return all subfolders
      * 
      * @param ipath
      *            the folder you want the subfolders off
-     * @return The subfolders of the ipath folder. May contain empty values.
-     *         This method returns a key value pair of key equals foldername and
-     *         value equals full path.
+     * @return The subfolders of the ipath folder. May contain empty values. This method returns a key value pair of key equals foldername and value
+     *         equals full path.
      */
     private static Map<String, IPath> findAllSubFolders(IPath ipath) {
 	String[] children = ipath.toFile().list();
@@ -61,18 +60,16 @@ public class ArduinoLibraries {
      * 
      * @param project
      *            the project to find all hardware libraries for
-     * @return all the library folder names. May contain empty values. This
-     *         method does not return the full path only the leaves.
+     * @return all the library folder names. May contain empty values. This method does not return the full path only the leaves.
      */
     public static Map<String, IPath> findAllHarwareLibraries(ICConfigurationDescription confdesc) {
-	Path platformFile = new Path(Common.getBuildEnvironmentVariable(confdesc,
-		ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ArduinoConst.EMPTY_STRING));
-	return findAllSubFolders(platformFile.removeLastSegments(1).append(ArduinoConst.LIBRARY_PATH_SUFFIX));
+	Path platformFile = new Path(Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, Const.EMPTY_STRING));
+	return findAllSubFolders(platformFile.removeLastSegments(1).append(Const.LIBRARY_PATH_SUFFIX));
     }
 
     public static Map<String, IPath> findAllPrivateLibraries() {
 	Map<String, IPath> ret = new HashMap<>();
-	String privateLibPaths[] = ArduinoInstancePreferences.getPrivateLibraryPaths();
+	String privateLibPaths[] = InstancePreferences.getPrivateLibraryPaths();
 	for (String curLibPath : privateLibPaths) {
 	    ret.putAll(findAllSubFolders(new Path(curLibPath)));
 	}
@@ -117,17 +114,16 @@ public class ArduinoLibraries {
      * @param libraries
      *            set of libraries to remove
      */
-    public static void removeLibrariesFromProject(IProject project, ICConfigurationDescription confdesc,
-	    Set<String> libraries) {
+    public static void removeLibrariesFromProject(IProject project, ICConfigurationDescription confdesc, Set<String> libraries) {
 	for (String CurItem : libraries) {
 	    try {
-		final IFolder folderHandle = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem);
+		final IFolder folderHandle = project.getFolder(Const.WORKSPACE_LIB_FOLDER + CurItem);
 		folderHandle.delete(true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.failed_to_remove_lib, e));
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.failed_to_remove_lib, e));
 	    }
 	}
-	ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
+	Helpers.removeInvalidIncludeFolders(confdesc);
     }
 
     private static HashMap<String, IPath> getAllInstalledLibraries(ICConfigurationDescription confdesc) {
@@ -139,23 +135,20 @@ public class ArduinoLibraries {
 	return libraries;
     }
 
-    public static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
-	    Set<String> librariesToAdd) {
+    public static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc, Set<String> librariesToAdd) {
 	HashMap<String, IPath> libraries = getAllInstalledLibraries(confdesc);
 	libraries.keySet().retainAll(librariesToAdd);
 	addLibrariesToProject(project, confdesc, libraries);
     }
 
-    private static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
-	    HashMap<String, IPath> libraries) {
+    private static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc, HashMap<String, IPath> libraries) {
 
 	for (Entry<String, IPath> CurItem : libraries.entrySet()) {
 	    try {
 
-		ArduinoHelpers.addCodeFolder(project, CurItem.getValue(),
-			ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
+		Helpers.addCodeFolder(project, CurItem.getValue(), Const.WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
 	    }
 	}
     }
@@ -165,7 +158,7 @@ public class ArduinoLibraries {
     // }
 
     public static Set<String> getAllLibrariesFromProject(IProject project) {
-	IFolder link = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER);
+	IFolder link = project.getFolder(Const.WORKSPACE_LIB_FOLDER);
 	Set<String> ret = new TreeSet<>();
 	try {
 	    if (link.exists()) {
@@ -197,8 +190,7 @@ public class ArduinoLibraries {
     }
 
     public static void reAttachLibrariesToProject(ICConfigurationDescription confdesc) {
-	Set<String> AllLibrariesOriginallyUsed = getAllLibrariesFromProject(
-		confdesc.getProjectDescription().getProject());
+	Set<String> AllLibrariesOriginallyUsed = getAllLibrariesFromProject(confdesc.getProjectDescription().getProject());
 	addLibrariesToProject(confdesc.getProjectDescription().getProject(), confdesc, AllLibrariesOriginallyUsed);
     }
 
@@ -241,21 +233,25 @@ public class ArduinoLibraries {
     private static Set<String> getUnresolvedProjectIncludes(IProject iProject) {
 	Set<String> ret = new TreeSet<>();
 	ICProject tt = CoreModel.getDefault().create(iProject);
+	IIndex index = null;
 
 	try {
-	    IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
+	    index = CCorePlugin.getIndexManager().getIndex(tt);
 	    index.acquireReadLock();
+	    try {
 
-	    IIndexFile allFiles[] = index.getFilesWithUnresolvedIncludes();
-	    for (IIndexFile curUnesolvedIncludeFile : allFiles) {
-		IIndexInclude includes[] = curUnesolvedIncludeFile.getIncludes();
-		for (IIndexInclude curinclude : includes) {
-		    if (curinclude.isActive() && !curinclude.isResolved()) {
-			ret.add(new Path(curinclude.getName()).removeFileExtension().toString());
+		IIndexFile allFiles[] = index.getFilesWithUnresolvedIncludes();
+		for (IIndexFile curUnesolvedIncludeFile : allFiles) {
+		    IIndexInclude includes[] = curUnesolvedIncludeFile.getIncludes();
+		    for (IIndexInclude curinclude : includes) {
+			if (curinclude.isActive() && !curinclude.isResolved()) {
+			    ret.add(new Path(curinclude.getName()).removeFileExtension().toString());
+			}
 		    }
 		}
+	    } finally {
+		index.releaseReadLock();
 	    }
-	    index.releaseReadLock();
 	} catch (CoreException e1) {
 	    // TODO Auto-generated catch block
 	    e1.printStackTrace();
@@ -268,23 +264,29 @@ public class ArduinoLibraries {
 
     public static void checkLibraries(IProject affectedProject) {
 	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-	ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
-	ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
+	if (mngr != null) {
+	    ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
+	    if (projectDescription != null) {
+		ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
+		if (configurationDescription != null) {
 
-	Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
-	Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
-	HashMap<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
-	UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
-	availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
-	if (!availableLibs.isEmpty()) {
-	    // there are possible libraries to add
-	    Common.log(new Status(IStatus.INFO, Common.CORE_PLUGIN_ID, "list of libraries to add to project "
-		    + affectedProject.getName() + ": " + availableLibs.keySet().toString()));
-	    addLibrariesToProject(affectedProject, configurationDescription, availableLibs);
-	    try {
-		mngr.setProjectDescription(affectedProject, projectDescription, true, null);
-	    } catch (CoreException e) {
-		e.printStackTrace();
+		    Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
+		    Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
+		    HashMap<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
+		    UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
+		    availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
+		    if (!availableLibs.isEmpty()) {
+			// there are possible libraries to add
+			Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
+				+ affectedProject.getName() + ": " + availableLibs.keySet().toString())); //$NON-NLS-1$
+			addLibrariesToProject(affectedProject, configurationDescription, availableLibs);
+			try {
+			    mngr.setProjectDescription(affectedProject, projectDescription, true, null);
+			} catch (CoreException e) {
+			    e.printStackTrace();
+			}
+		    }
+		}
 	    }
 	}
     }

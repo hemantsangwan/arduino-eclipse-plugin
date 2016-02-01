@@ -18,14 +18,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 
 //TODO: Should this be called Wizard_Source_Folder_Page to make consistent with the library import.....
 //TODO: Or Arduino_Source_Folder_Import_Page
 
 /**
- * Import_Source_Folder_Page is the one and only page in the source folder
- * import wizard. It controls a text field and a browse button.
+ * Import_Source_Folder_Page is the one and only page in the source folder import wizard. It controls a text field and a browse button.
  * 
  * @author Jan Baeyens
  * 
@@ -83,6 +82,7 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 	this.controlLibraryPath.setLayoutData(theGriddata);
 	this.controlLibraryPath.addKeyListener(new KeyListener() {
 
+	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    public void keyReleased(KeyEvent e) {
 		updateWidgetEnablements();
@@ -110,7 +110,7 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 		final Shell shell = new Shell();
 		DirectoryDialog theDialog = new DirectoryDialog(shell);
 		if ((Import_Source_Folder_Page.this.controlLibraryPath.getText() == null)
-			|| (Import_Source_Folder_Page.this.controlLibraryPath.getText() == ArduinoConst.EMPTY_STRING)) {
+			|| (Import_Source_Folder_Page.this.controlLibraryPath.getText() == Const.EMPTY_STRING)) {
 		    theDialog.setFilterPath(Import_Source_Folder_Page.this.controlLibraryPath.getText());
 		}
 
@@ -141,13 +141,11 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
     }
 
     public boolean canFinish() {
-	return !((this.controlLibraryPath.getText().equals(ArduinoConst.EMPTY_STRING))
-		|| (getContainerFullPath() == null));
+	return !((this.controlLibraryPath.getText().equals(Const.EMPTY_STRING)) || (getContainerFullPath() == null));
     }
 
     public String GetLibraryFolder() {
-	return this.controlLibraryPath.getText() == null ? ArduinoConst.EMPTY_STRING
-		: this.controlLibraryPath.getText().trim();
+	return this.controlLibraryPath.getText() == null ? Const.EMPTY_STRING : this.controlLibraryPath.getText().trim();
     }
 
     public void setImportProject(IProject project) {

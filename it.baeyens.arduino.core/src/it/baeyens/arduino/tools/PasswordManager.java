@@ -6,7 +6,7 @@ import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.ui.PasswordDialog;
 
 public class PasswordManager {
@@ -45,7 +45,8 @@ public class PasswordManager {
 		this.myLogin = node.get(Messages.security_login, null);
 	    }
 	    if (this.myPassword == null) {
-		PasswordDialog dialog = new PasswordDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		PasswordDialog dialog = new PasswordDialog(
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 		if (this.myLogin != null)
 		    dialog.setUser(this.myLogin);
 		dialog.sethost(host);
@@ -86,7 +87,7 @@ public class PasswordManager {
 
     private static String ConvertHostToNodeName(String host) {
 
-	return "ssh/" + host.replace(ArduinoConst.DOT, "/"); //$NON-NLS-1$ //$NON-NLS-2$
+	return "ssh/" + host.replace(Const.DOT, Const.SLACH); //$NON-NLS-1$
     }
 
 }

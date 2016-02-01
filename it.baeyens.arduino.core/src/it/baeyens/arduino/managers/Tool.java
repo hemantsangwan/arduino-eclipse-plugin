@@ -18,22 +18,22 @@ import org.eclipse.core.runtime.Status;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
-public class ArduinoTool {
+public class Tool {
 
     private String name;
     private String version;
-    private List<ArduinoToolSystem> systems;
+    private List<ToolSystem> systems;
 
-    private transient ArduinoPackage pkg;
+    private transient Package pkg;
 
-    public void setOwner(ArduinoPackage pkg) {
+    public void setOwner(Package pkg) {
 	this.pkg = pkg;
-	for (ArduinoToolSystem system : this.systems) {
+	for (ToolSystem system : this.systems) {
 	    system.setOwner(this);
 	}
     }
 
-    public ArduinoPackage getPackage() {
+    public Package getPackage() {
 	return this.pkg;
     }
 
@@ -45,12 +45,13 @@ public class ArduinoTool {
 	return this.version;
     }
 
-    public List<ArduinoToolSystem> getSystems() {
+    public List<ToolSystem> getSystems() {
 	return this.systems;
     }
 
     public Path getInstallPath() {
-	return Paths.get(ConfigurationPreferences.getInstallationPath().append("tools").append(this.pkg.getName()).append(this.name) //$NON-NLS-1$
+	return Paths.get(ConfigurationPreferences.getInstallationPath().append("tools").append(this.pkg.getName()) //$NON-NLS-1$
+		.append(this.name)
 		.append(this.version).toString());
     }
 
@@ -63,19 +64,21 @@ public class ArduinoTool {
 	    return Status.OK_STATUS;
 	}
 
-	for (ArduinoToolSystem system : this.systems) {
+	for (ToolSystem system : this.systems) {
 	    if (system.isApplicable()) {
 		return system.install(monitor);
 	    }
 	}
 
 	// No valid system
-	return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoTool_no_valid_system + this.name);
+	return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system + this.name);
     }
 
     // public Properties getToolProperties() {
     // Properties properties = new Properties();
-    // properties.put("runtime.tools." + name + ".path", ArduinoBuildConfiguration.pathString(getInstallPath())); // $NON-NLS-1$ //$NON-NLS-2$
+    // properties.put("runtime.tools." + name + ".path",
+    // ArduinoBuildConfiguration.pathString(getInstallPath())); // $NON-NLS-1$
+    // //$NON-NLS-2$
     // return properties;
     // }
 
